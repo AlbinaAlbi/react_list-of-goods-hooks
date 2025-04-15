@@ -4,7 +4,6 @@ import './App.scss';
 import { useState } from 'react';
 
 type Goods = string[];
-type SortType = string;
 type Reversed = boolean;
 
 export const goodsFromServer: Goods = [
@@ -20,8 +19,11 @@ export const goodsFromServer: Goods = [
   'Garlic',
 ];
 
-const SORT_BY_ALPHABET = 'alphabetically';
-const SORT_BY_LENGTH = 'length';
+enum SortType {
+  None = '',
+  Alphabetically = 'alphabetically',
+  Length = 'length',
+}
 
 function getPreparedGoods(
   goods: Goods,
@@ -33,9 +35,9 @@ function getPreparedGoods(
   if (sortType) {
     preparedGoods.sort((good1, good2) => {
       switch (sortType) {
-        case SORT_BY_ALPHABET:
+        case SortType.Alphabetically:
           return good1.localeCompare(good2);
-        case SORT_BY_LENGTH:
+        case SortType.Length:
           return good1.length - good2.length;
         default:
           return 0;
@@ -47,17 +49,17 @@ function getPreparedGoods(
 }
 
 export const App: React.FC = () => {
-  const [sortField, setSortField] = useState('');
+  const [sortField, setSortField] = useState(SortType.None);
   const [isReversed, setIsReversed] = useState(false);
   const [visibleGoods, setVisibleGoods] = useState([...goodsFromServer]);
 
   const startReset = () => {
-    setSortField('');
+    setSortField(SortType.None);
     setVisibleGoods([...goodsFromServer]);
     setIsReversed(false);
   };
 
-  const sortInitially = (styleSort: string) => {
+  const sortInitially = (styleSort: SortType) => {
     setSortField(styleSort);
 
     setVisibleGoods(
@@ -76,7 +78,7 @@ export const App: React.FC = () => {
         <button
           type="button"
           className={`button is-info ${sortField === 'alphabetically' ? '' : 'is-light'}`}
-          onClick={() => sortInitially(SORT_BY_ALPHABET)}
+          onClick={() => sortInitially(SortType.Alphabetically)}
         >
           Sort alphabetically
         </button>
@@ -84,7 +86,7 @@ export const App: React.FC = () => {
         <button
           type="button"
           className={`button is-success ${sortField === 'length' ? '' : 'is-light'}`}
-          onClick={() => sortInitially(SORT_BY_LENGTH)}
+          onClick={() => sortInitially(SortType.Length)}
         >
           Sort by length
         </button>
