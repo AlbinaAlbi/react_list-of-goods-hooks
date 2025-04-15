@@ -59,7 +59,7 @@ export const App: React.FC = () => {
     setIsReversed(false);
   };
 
-  const sortInitially = (styleSort: SortType) => {
+  const handleSort = (styleSort: SortType) => {
     setSortField(styleSort);
 
     setVisibleGoods(
@@ -68,8 +68,15 @@ export const App: React.FC = () => {
   };
 
   const handleSetReversed = () => {
-    setIsReversed(!isReversed);
-    setVisibleGoods([...visibleGoods].reverse());
+    setIsReversed(prev => {
+      const newReversed = !prev;
+
+      setVisibleGoods(
+        getPreparedGoods(goodsFromServer, sortField, newReversed),
+      );
+
+      return newReversed;
+    });
   };
 
   return (
@@ -77,23 +84,23 @@ export const App: React.FC = () => {
       <div className="buttons">
         <button
           type="button"
-          className={`button is-info ${sortField === 'alphabetically' ? '' : 'is-light'}`}
-          onClick={() => sortInitially(SortType.Alphabetically)}
+          className={`button is-info ${sortField === SortType.Alphabetically ? '' : 'is-light'}`}
+          onClick={() => handleSort(SortType.Alphabetically)}
         >
           Sort alphabetically
         </button>
 
         <button
           type="button"
-          className={`button is-success ${sortField === 'length' ? '' : 'is-light'}`}
-          onClick={() => sortInitially(SortType.Length)}
+          className={`button is-success ${sortField === SortType.Length ? '' : 'is-light'}`}
+          onClick={() => handleSort(SortType.Length)}
         >
           Sort by length
         </button>
 
         <button
           type="button"
-          className={`button is-warning ${isReversed ? '' : 'is-light'}`}
+          className={`button is-warning ${isReversed ? SortType.None : 'is-light'}`}
           onClick={handleSetReversed}
         >
           Reverse
